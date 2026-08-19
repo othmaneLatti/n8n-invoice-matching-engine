@@ -1,0 +1,1432 @@
+{
+  "name": "ETL",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        304,
+        144
+      ],
+      "id": "be6e57a4-75b3-473c-85e7-6976ad01e0ce",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "uXwgQKZ69rja80w9",
+          "name": "othmanelatti@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        656
+      ],
+      "id": "669b0f2d-534b-4b4f-8a55-32e6de841342",
+      "name": "invoices",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "imap": {
+          "id": "dnmViGPeB2gHsTnp",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "157Ryj_k874VkAphhBk9dKzPqcpQB4BMg",
+          "mode": "list",
+          "cachedResultName": "Delivery Notes",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/157Ryj_k874VkAphhBk9dKzPqcpQB4BMg"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        144
+      ],
+      "id": "69b10076-3bb8-40b4-b5f0-bc5b7cbb31db",
+      "name": "delivery notes",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "uXwgQKZ69rja80w9",
+          "name": "othmanelatti@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "$binary ",
+        "options": {
+          "includeBinary": true
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        304,
+        656
+      ],
+      "id": "a6addb39-97ec-437b-8f56-4cd8fd5cc5ae",
+      "name": "Split Out",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        656,
+        656
+      ],
+      "id": "f2f7a6cb-af9f-49bc-8b29-8c154f1b5ef1",
+      "name": "XML"
+    },
+    {
+      "parameters": {
+        "operation": "xml",
+        "binaryPropertyName": "={{ Object.keys($binary)[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        656
+      ],
+      "id": "91563bd1-7e41-4a07-b35c-c910d0419ed0",
+      "name": "Extract from File",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "delivery_note_file",
+        "name": "=delivery_note_{{ $now.format('yyyy-MM-dd') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1aQxUdQEFheP_5F0YnprWiN6-NNAUOmtZ",
+          "mode": "list",
+          "cachedResultName": "delivery notes",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1aQxUdQEFheP_5F0YnprWiN6-NNAUOmtZ"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        160
+      ],
+      "id": "cdba14c9-89c9-4725-99b7-f16f1c3e3f30",
+      "name": "Upload delivery note",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "OXbpiGOEdgQuPAo7",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "invoice_file",
+        "name": "=INV_{{ $('XML').item.json.Invoice.AccountingSupplierParty.Party.PartyName.Name.replace(/[^a-zA-Z0-9 ]/g, '') }}_{{ $('XML').item.json.Invoice.ID }}.xml",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1WkbDkoUNmlRkZ2YbKT0gRW06TSIRdXL7",
+          "mode": "list",
+          "cachedResultName": "invoices",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1WkbDkoUNmlRkZ2YbKT0gRW06TSIRdXL7"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1856,
+        688
+      ],
+      "id": "23e98a5d-a3ad-4882-bb25-cd0c794dccf9",
+      "name": "Upload invoice",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "OXbpiGOEdgQuPAo7",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "text": "## Role\nYou are a document data extraction agent. Your sole function is to extract structured data from images of delivery notes (also called packing slips or goods delivery documents) belonging to an HVAC installation company's suppliers. You are not a conversational assistant, you do not answer questions, and you do not make business decisions. You only extract what is visibly present in the image and return it as JSON. You are NOT a matching engine — you never compare this document to any invoice or other document, and you never judge whether the document looks internally consistent.\n\n## Behavior Rules\n1. Always extract only what is visually present and legible in the image. Never infer, complete, or guess a value that is not clearly visible.\n2. Never correct, normalize, or \"fix\" a value you believe is a typo or inconsistency (e.g. a reference number, a supplier name spelling, a mismatched format). Extract it exactly as written, character for character.\n3. Every field must be filled with one of exactly three kinds of value: the real extracted value, the string \"N/A\", or the string \"UNCERTAIN\". Never leave a field empty, never use null, never invent a fourth option.\n4. Use \"N/A\" only when the field is genuinely absent from the document (e.g. no signature line exists at all, no reference number was ever printed).\n5. Use \"UNCERTAIN\" only when the field appears to be present on the document but you cannot read it with confidence (e.g. blurry, obscured, ambiguous characters, cut off from frame).\n6. Never invent line items, quantities, or reference numbers that are not visibly printed on the document.\n7. Only extract data belonging to the delivery note itself. Ignore stray marks, watermarks, or background objects in the photo that are not part of the document content.\n8. Treat every document as a new, independent extraction. Do not carry over assumptions from any previous image you may have processed in this conversation.\n9. If the image does not appear to be a delivery note at all (e.g. random photo, different document type, blank, fully unreadable), do not attempt field-by-field extraction. Return the designated error object instead.\n10. Always compute \"confidence_score\" using the deterministic point system in the Confidence Scoring section below. Never assign a confidence_score based on a general impression of the image — it must be the direct arithmetic result of the UNCERTAIN/N/A markings you already produced for the other fields. The two must always be consistent with each other.\n\n## Tools\nNo external tools are used in this step. This agent performs extraction only, using the image provided as direct input.\n\n## Confidence Scoring\n\nThis score drives automated routing: any document scoring below 70 goes to human review; 70 and above is treated as a clean pass. Because that split is automated, the score must be earned by counting concrete legibility signals — not estimated.\n\nStart at 100 points. Apply every deduction that applies (deductions stack; the score cannot go below 0):\n\n- Each of the four core fields (`supplier_name`, `delivery_note_reference`, `delivery_date`, `buyer_name`) marked \"UNCERTAIN\": **−35 points each**.\n- `line_items_confidence` equal to \"UNCERTAIN\": **−35 points**.\n- Each individual line item that contains at least one \"UNCERTAIN\" sub-field (`article_id`, `description`, `quantity`, `unit`): **−15 points per affected line item**, up to a maximum of −45 points total from this category.\n- `extraction_notes` is not \"N/A\" (i.e. you flagged something noteworthy — merged documents, rotated image relied on, ambiguous date format, etc.): **−35 points**.\n- A core field is \"N/A\" (genuinely absent from the document, not unreadable): **0 points deducted**. Absence is not uncertainty and must never lower the score.\n\nDo not apply any deduction not listed above, and do not add points back for \"the rest of the document being clear.\" One UNCERTAIN field is sufficient on its own to require human eyes on that document, and the scale must reflect that — it may not average out with confidently-read fields elsewhere.\n\n## Edge Cases\n1. If a field is partially readable (some characters clear, others not), mark the entire field \"UNCERTAIN\" rather than extracting a partial guess, and let the Confidence Scoring deductions apply normally — do not additionally penalize or bonus the score for this.\n2. If a reference number or supplier name looks internally inconsistent or unusual, extract it exactly as printed anyway — inconsistency is not your concern, only legibility is. Internal inconsistency alone is never a reason to deduct confidence points; only illegibility, absence-with-uncertainty, or a flagged extraction_notes issue may.\n3. If the line items section is entirely illegible, return an empty array for \"line_items\" and set \"line_items_confidence\" to \"UNCERTAIN\" (apply the associated −35 point deduction).\n4. If the document lists zero line items because none were delivered on this note (rare but possible), return an empty array and set \"line_items_confidence\" to \"N/A\" (no deduction — this is genuine absence, not uncertainty).\n5. If the image shows multiple documents merged into one frame, extract only the first/primary document, note this in \"extraction_notes\" (triggering the −35 point deduction), and continue extracting the primary document's fields normally.\n6. If quantities use an unusual unit or grouping (e.g. \"10 boxes\"), extract \"quantity\" and \"unit\" as separate fields, exactly as printed — do not convert or assume a base unit.\n7. If a date format is ambiguous (DD/MM vs MM/DD), extract the date exactly as printed as a string. Do not convert or standardize it. Ambiguous format alone does not require an extraction_notes flag or deduction as long as the characters themselves are legible — only mark \"UNCERTAIN\" if the characters themselves cannot be read.\n8. If the image is rotated or upside down but legible, extract normally with no deduction.\n9. If the image is not a valid delivery note, return only the error object specified in Output Format — do not attempt field extraction, and do not compute a confidence_score for it (the error object's fixed confidence_score of 0 already signals human review is required).\n\n## Output Format\nReturn only a raw JSON object with no additional text, preamble, or markdown formatting. The response must be directly parseable by JSON.parse(). Every field's value must be either the real extracted value, \"N/A\", or \"UNCERTAIN\" — never null, never an empty string. \"confidence_score\" must always be an integer between 0 and 100, computed per the Confidence Scoring section.\n\n{\n  \"extraction_attempted\": true,\n  \"supplier_name\": \"string, N/A, or UNCERTAIN\",\n  \"delivery_note_reference\": \"string, N/A, or UNCERTAIN\",\n  \"delivery_date\": \"string exactly as printed, N/A, or UNCERTAIN\",\n  \"buyer_name\": \"string, N/A, or UNCERTAIN\",\n  \"line_items\": [\n    {\n      \"article_id\": \"string, N/A, or UNCERTAIN\",\n      \"description\": \"string, N/A, or UNCERTAIN\",\n      \"quantity\": \"string, N/A, or UNCERTAIN\",\n      \"unit\": \"string, N/A, or UNCERTAIN\"\n    }\n  ],\n  \"line_items_confidence\": \"OK, N/A, or UNCERTAIN\",\n  \"extraction_notes\": \"string, or N/A if nothing to note\",\n  \"confidence_score\": 0\n}\n\nIf the image is not a valid delivery note, return only:\n{\"error\": \"Image does not appear to be a valid delivery note\", \"extraction_attempted\": false, \"confidence_score\": 0}\n\n## Tone & Language\nNot applicable — output is JSON only, never natural language to a human. Preserve any extracted text in its original language (French, Dutch, etc.) exactly as printed — do not translate.",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        144
+      ],
+      "id": "ef7c3ec6-b6f1-4ecd-881b-420a962da0d1",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pKUzKLjpL0b9dTFz",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "INVOICES",
+        "height": 368,
+        "width": 2400,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        64,
+        592
+      ],
+      "id": "bd437e1c-79a0-42c8-a536-7537b3f86db4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node — place immediately after the Gemini \"Analyze Image\" node.\n// Purpose: deterministically parse and validate the AI's extraction output.\n// The AI node is non-deterministic (may add stray text, markdown fences, etc.),\n// so this node never trusts raw output blindly — it parses defensively and\n// flags anything that doesn't conform, rather than letting a malformed\n// response silently break downstream matching logic.\n\nconst CORE_FIELDS = [\"supplier_name\", \"delivery_note_reference\", \"delivery_date\", \"buyer_name\"];\n\nfunction extractRawText(item) {\n  // Adjust this path if your Gemini node's output shape differs —\n  // this matches the \"content.parts[0].text\" shape shown in your DN-019 test output.\n  try {\n    return item.json.content.parts[0].text;\n  } catch (e) {\n    // Fallback for a simpler node output shape, e.g. item.json.text directly\n    return item.json.text || item.json.output || null;\n  }\n}\n\nfunction stripMarkdownFences(raw) {\n  if (!raw) return raw;\n  let cleaned = raw.trim();\n  if (cleaned.startsWith(\"```\")) {\n    cleaned = cleaned.replace(/^```(?:json)?/i, \"\").replace(/```$/, \"\").trim();\n  }\n  return cleaned;\n}\n\nfunction safeParseJSON(raw) {\n  const cleaned = stripMarkdownFences(raw);\n  try {\n    return { success: true, data: JSON.parse(cleaned) };\n  } catch (e) {\n    return { success: false, error: e.message, raw_text: raw };\n  }\n}\n\nfunction countUncertainOrMissing(parsed) {\n  let uncertainCount = 0;\n  let naCount = 0;\n\n  for (const field of CORE_FIELDS) {\n    const value = parsed[field];\n    if (value === \"UNCERTAIN\") uncertainCount++;\n    if (value === \"N/A\") naCount++;\n  }\n\n  // Also check line items — if the whole line_items array is empty/uncertain,\n  // that's a serious data quality issue since matching depends on it.\n  const lineItemsBad = parsed.line_items_confidence === \"UNCERTAIN\"\n    || (Array.isArray(parsed.line_items) && parsed.line_items.length === 0);\n\n  return { uncertainCount, naCount, lineItemsBad };\n}\n\nfunction decideReviewRoute(parsed, uncertainCount, naCount, lineItemsBad) {\n  // Explicit route was requested for manual review — this is the deterministic\n  // rule that decides it, not the AI. Tune thresholds as you see real data volume.\n  if (parsed.extraction_attempted === false) {\n    return \"manual_review\"; // not a valid delivery note at all\n  }\n  if (uncertainCount >= 2 || lineItemsBad) {\n    return \"manual_review\"; // too much uncertainty to trust auto-matching\n  }\n  if (uncertainCount === 1 || naCount >= 1) {\n    return \"flagged_ok\"; // proceed to matching, but carry a flag for visibility\n  }\n  return \"auto_process\"; // clean extraction, safe to feed into matching logic\n}\n\n// --- Main execution ---\nconst results = [];\n\nfor (const item of $input.all()) {\n  const rawText = extractRawText(item);\n  const parseResult = safeParseJSON(rawText);\n\n  if (!parseResult.success) {\n    // AI output was not valid JSON at all — this itself is a manual review case,\n    // and we log the raw text so you can debug prompt issues later.\n    results.push({\n      json: {\n        parsed_data: {\n          parse_success: false,\n          parse_error: parseResult.error,\n          raw_ai_output: parseResult.raw_text,\n          review_route: \"manual_review\",\n          review_reason: \"AI output was not valid JSON\",\n        }\n      },\n    });\n    continue;\n  }\n\n  const parsed = parseResult.data;\n\n  // Handle the explicit \"not a valid delivery note\" error case from the prompt\n  if (parsed.error) {\n    results.push({\n      json: {\n        parsed_data: {\n          parse_success: true,\n          extraction_attempted: false,\n          error: parsed.error,\n          review_route: \"manual_review\",\n          review_reason: \"AI reported this is not a valid delivery note\",\n        }\n      },\n    });\n    continue;\n  }\n\n  // Validate all expected fields are present (defensive — AI could still omit one\n  // despite instructions)\n  const missingKeys = CORE_FIELDS.filter((f) => !(f in parsed));\n  const { uncertainCount, naCount, lineItemsBad } = countUncertainOrMissing(parsed);\n  const reviewRoute = decideReviewRoute(parsed, uncertainCount, naCount, lineItemsBad);\n\n  results.push({\n    json: {\n      parsed_data: {\n        parse_success: true,\n        ...parsed,\n        _validation: {\n          missing_keys: missingKeys,\n          uncertain_field_count: uncertainCount,\n          na_field_count: naCount,\n          line_items_flagged: lineItemsBad,\n        },\n        review_route: reviewRoute,\n      }\n    },\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        144
+      ],
+      "id": "c0fbc4d3-ef41-4d63-94ec-428aab67c8bc",
+      "name": "to json"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA",
+          "mode": "list",
+          "cachedResultName": "METADATA INDEX",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 913461440,
+          "mode": "list",
+          "cachedResultName": "delivery notes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA/edit#gid=913461440"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Supplier_name": "={{ $('to json').item.json.parsed_data.supplier_name }}",
+            "Delivery_note_URL": "={{ $json.webViewLink }}",
+            "Delivery_note_reference": "={{ $('to json').item.json.parsed_data.delivery_note_reference }}",
+            "Buyer_Name": "={{ $('to json').item.json.parsed_data.buyer_name }}",
+            "Parse_success": "={{ $('to json').item.json.parsed_data.parse_success }}",
+            "Extraction_notes": "={{ $('to json').item.json.parsed_data.extraction_notes }}",
+            "Confidence": "={{ $('to json').item.json.parsed_data.confidence_score }}",
+            "Delivery_date": "={{ $('to json').item.json.parsed_data.delivery_date }}",
+            "Status": "NEW"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Supplier_name",
+              "displayName": "Supplier_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Buyer_Name",
+              "displayName": "Buyer_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivery_note_reference",
+              "displayName": "Delivery_note_reference",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivery_date",
+              "displayName": "Delivery_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Extraction_notes",
+              "displayName": "Extraction_notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Parse_success",
+              "displayName": "Parse_success",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Confidence",
+              "displayName": "Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivery_note_URL",
+              "displayName": "Delivery_note_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2064,
+        160
+      ],
+      "id": "aa05ccf6-5224-4c11-98a6-dc001ab72f77",
+      "name": "Append row in delivery notes",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ckgKURQensFU9Uvc",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA",
+          "mode": "list",
+          "cachedResultName": "METADATA INDEX",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "invoices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Invoice_ID": "={{ $('XML').item.json.Invoice.ID }}",
+            "Supplier_Name": "={{ $('XML').item.json.Invoice.AccountingSupplierParty.Party.PartyName.Name }}",
+            "Total_Amount": "={{ $('XML').item.json.Invoice.LegalMonetaryTotal.PayableAmount._ }} {{ $('XML').item.json.Invoice.LegalMonetaryTotal.PayableAmount.currencyID }}",
+            "Buyer_Reference": "={{ $('XML').item.json.Invoice.BuyerReference }}",
+            "Issue_Date": "={{ $('XML').item.json.Invoice.IssueDate }}",
+            "Invoice_Name": "={{ $json.name }}",
+            "Status": "NEW",
+            "Drive_File_URL": "={{ $json.webViewLink }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Invoice_ID",
+              "displayName": "Invoice_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Invoice_Name",
+              "displayName": "Invoice_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Supplier_Name",
+              "displayName": "Supplier_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Buyer_Reference",
+              "displayName": "Buyer_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total_Amount",
+              "displayName": "Total_Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Issue_Date",
+              "displayName": "Issue_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Drive_File_URL",
+              "displayName": "Drive_File_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2048,
+        688
+      ],
+      "id": "94e3eac5-4a81-4edf-a3f1-d320e0d479b7",
+      "name": "Append row in invoices",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ckgKURQensFU9Uvc",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "DELIVERY NOTES",
+        "height": 496,
+        "width": 2388,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        64,
+        32
+      ],
+      "id": "816c5f60-e34e-4a5e-baae-89a57a89de50",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f058e20-3b64-4c29-92c3-f647b632c4f7",
+              "name": "delivery_note_file",
+              "value": "={{ $('Download file').item.binary[Object.keys($('Download file').item.binary)[0]] }}",
+              "type": "binary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        160
+      ],
+      "id": "52ee3bc7-6b57-42d4-a220-1f6c29415673",
+      "name": "recover delivery note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f058e20-3b64-4c29-92c3-f647b632c4f7",
+              "name": "invoice_file",
+              "value": "={{ $('Split Out').item.binary[Object.keys($('Split Out').item.binary)[0]] }}",
+              "type": "binary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        688
+      ],
+      "id": "1e9b43a1-897c-4540-a88e-090e0c4020fa",
+      "name": "recover invoice"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f058e20-3b64-4c29-92c3-f647b632c4f7",
+              "name": "delivery_note_file",
+              "value": "={{ $('Download file').item.binary[Object.keys($('Download file').item.binary)[0]] }}",
+              "type": "binary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        368
+      ],
+      "id": "420c76f8-b66f-479c-a304-a43f915aad50",
+      "name": "recover delivery note1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA",
+          "mode": "list",
+          "cachedResultName": "METADATA INDEX",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 913461440,
+          "mode": "list",
+          "cachedResultName": "delivery notes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA/edit#gid=913461440"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Supplier_name",
+              "lookupValue": "={{ $json.parsed_data.supplier_name }}"
+            },
+            {
+              "lookupColumn": "Delivery_note_reference",
+              "lookupValue": "={{ $json.parsed_data.delivery_note_reference }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1296,
+        144
+      ],
+      "id": "53f7c1e2-798c-4f8a-92d2-5d73b1e87afe",
+      "name": "Get all delivery notes",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ckgKURQensFU9Uvc",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA",
+          "mode": "list",
+          "cachedResultName": "METADATA INDEX",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "invoices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1w1PMYdfANOp3O-AvfcTSHx22w-6Gymy51LsSkNF7jSA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Invoice_ID",
+              "lookupValue": "={{ $json.Invoice.ID }}"
+            },
+            {
+              "lookupColumn": "Supplier_Name",
+              "lookupValue": "={{ $json.Invoice.AccountingSupplierParty.Party.PartyName.Name }}"
+            },
+            {
+              "lookupColumn": "Issue_Date",
+              "lookupValue": "={{ $json.Invoice.IssueDate }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1296,
+        672
+      ],
+      "id": "3f21e3c7-0cbf-4179-94a5-d13ab46ed054",
+      "name": "Get all invoices",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ckgKURQensFU9Uvc",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0c084eb7-6a0b-462a-b813-a69a01e71905",
+              "leftValue": "={{ $json.parsed_data.confidence_score }}",
+              "rightValue": 70,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        736,
+        144
+      ],
+      "id": "842769c3-8fc0-4e82-bea1-b20265001e98",
+      "name": "OCR Succeeded ?"
+    },
+    {
+      "parameters": {
+        "sendTo": "othmanelatti01@gmail.com",
+        "subject": "Delivery note needs manual review",
+        "emailType": "text",
+        "message": "the model couldnt accurately extract this document informations , please review it",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "delivery_note_file"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        368
+      ],
+      "id": "2e8a0111-69df-4d46-9703-d814fea80667",
+      "name": "manual review",
+      "webhookId": "5eb45e01-e430-4e13-a8e3-3eed9d01cfb8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FhbxwSTEo8l2iw42",
+          "name": "othmanelatti@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "540cc72e-e763-4d02-a524-a26f527fe5b9",
+              "leftValue": "={{ $json.Invoice_ID }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1456,
+        672
+      ],
+      "id": "6d5eecd4-c2b0-414c-81a3-73f026e99729",
+      "name": "INVOICE EXISTS ?"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        848,
+        656
+      ],
+      "id": "56b0c8a2-65bd-4ff7-bc30-85f67d83d0f7",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1G60d4eaAAu7jr55aGECWxC7FwbNTN7X_XU3vR0ZGnQk",
+          "mode": "list",
+          "cachedResultName": "FULL JSON",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G60d4eaAAu7jr55aGECWxC7FwbNTN7X_XU3vR0ZGnQk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "invoices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G60d4eaAAu7jr55aGECWxC7FwbNTN7X_XU3vR0ZGnQk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Document ID": "={{ $json.Invoice_ID }}",
+            "Supplier": "={{ $json.Supplier_Name }}",
+            "Date": "={{ $json.Issue_Date }}",
+            "Reference": "={{ $json.Buyer_Reference }}",
+            "JSON": "={{ $('XML').item.json.Invoice }}",
+            "File ID": "={{ $('Upload invoice').item.json.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Document ID",
+              "displayName": "Document ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Supplier",
+              "displayName": "Supplier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reference",
+              "displayName": "Reference",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File ID",
+              "displayName": "File ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "JSON",
+              "displayName": "JSON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2256,
+        688
+      ],
+      "id": "44268cdd-55c9-4e0c-b414-0cdddd919489",
+      "name": "save full invoice data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ckgKURQensFU9Uvc",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        944,
+        128
+      ],
+      "id": "8e622fef-8f77-4a4e-aea1-2e1bca5213f5",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "amount": 7
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        144
+      ],
+      "id": "8d7f8783-5720-4a59-8ec7-352065e5cacd",
+      "name": "Wait",
+      "webhookId": "f820d3b0-5422-4e2d-9ed7-55d5807ad2c3"
+    },
+    {
+      "parameters": {
+        "amount": 7
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1088,
+        672
+      ],
+      "id": "2fed1a40-799c-4005-9fca-0ba0fe0a7959",
+      "name": "Wait1",
+      "webhookId": "f820d3b0-5422-4e2d-9ed7-55d5807ad2c3"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1G60d4eaAAu7jr55aGECWxC7FwbNTN7X_XU3vR0ZGnQk",
+          "mode": "list",
+          "cachedResultName": "FULL JSON",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G60d4eaAAu7jr55aGECWxC7FwbNTN7X_XU3vR0ZGnQk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 615114049,
+          "mode": "list",
+          "cachedResultName": "delivery notes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G60d4eaAAu7jr55aGECWxC7FwbNTN7X_XU3vR0ZGnQk/edit#gid=615114049"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "JSON": "={{ $('to json').item.json.parsed_data }}",
+            "Supplier": "={{ $('to json').item.json.parsed_data.supplier_name }}",
+            "Buyer": "={{ $('to json').item.json.parsed_data.buyer_name }}",
+            "Date": "={{ $('to json').item.json.parsed_data.delivery_date }}",
+            "Reference": "={{ $('to json').item.json.parsed_data.delivery_note_reference }}",
+            "File ID": "={{ $('Upload delivery note').item.json.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Supplier",
+              "displayName": "Supplier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Buyer",
+              "displayName": "Buyer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reference",
+              "displayName": "Reference",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File ID",
+              "displayName": "File ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "JSON",
+              "displayName": "JSON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2256,
+        160
+      ],
+      "id": "d9acf9dd-2ff7-4410-9b0c-1ea5cb89c58e",
+      "name": "save full DN data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ckgKURQensFU9Uvc",
+          "name": "kamalsaadi0809@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2bf28d94-b66f-4207-b09b-6f8b84de647d",
+              "leftValue": "={{ $json.Delivery_note_reference }}",
+              "rightValue": "={{ $json.Buyer_Name }}",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1472,
+        144
+      ],
+      "id": "cc1cf6be-6d9f-4d58-b4f3-59fa691dfb96",
+      "name": "DN EXISTS ?"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delivery notes": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "invoices": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload delivery note": {
+      "main": [
+        [
+          {
+            "node": "Append row in delivery notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload invoice": {
+      "main": [
+        [
+          {
+            "node": "Append row in invoices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "to json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "to json": {
+      "main": [
+        [
+          {
+            "node": "OCR Succeeded ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recover delivery note": {
+      "main": [
+        [
+          {
+            "node": "Upload delivery note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recover invoice": {
+      "main": [
+        [
+          {
+            "node": "Upload invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recover delivery note1": {
+      "main": [
+        [
+          {
+            "node": "manual review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all delivery notes": {
+      "main": [
+        [
+          {
+            "node": "DN EXISTS ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all invoices": {
+      "main": [
+        [
+          {
+            "node": "INVOICE EXISTS ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR Succeeded ?": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "recover delivery note1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INVOICE EXISTS ?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "recover invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in invoices": {
+      "main": [
+        [
+          {
+            "node": "save full invoice data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save full invoice data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in delivery notes": {
+      "main": [
+        [
+          {
+            "node": "save full DN data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get all delivery notes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get all invoices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save full DN data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DN EXISTS ?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "recover delivery note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "4JJjRMN8eoCUJh0L",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "1cb0798d-64f9-45dc-b81b-1055dcfd7890",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a8eb3f8f5b0f7d3acf7708046f3d91375adfff4e505d114c3d44d924ce61daa8"
+  },
+  "nodeGroups": [],
+  "id": "zNjPGcUVIrJfdqWI",
+  "tags": []
+}
