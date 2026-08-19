@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+    <ID>INV-006</ID>
+    <IssueDate>2026-03-07</IssueDate>
+    <AccountingSupplierParty>
+        <Party>
+            <PartyName>
+                <Name>Van Damme Klimaatgroothandel</Name>
+            </PartyName>
+        </Party>
+    </AccountingSupplierParty>
+    <BuyerReference>VD-10098</BuyerReference>
+    <InvoiceLine>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1001</ID>
+            </SellersItemIdentification>
+            <Name>Copper pipe 15mm</Name>
+            <Quantity>20</Quantity>
+            <PriceAmount currencyID="EUR">3.2</PriceAmount>
+        </Item>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1004</ID>
+            </SellersItemIdentification>
+            <Name>Condensate pump</Name>
+            <Quantity>4</Quantity>
+            <PriceAmount currencyID="EUR">55.0</PriceAmount>
+        </Item>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1006</ID>
+            </SellersItemIdentification>
+            <Name>Air filter G4</Name>
+            <Quantity>15</Quantity>
+            <PriceAmount currencyID="EUR">6.5</PriceAmount>
+        </Item>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1009</ID>
+            </SellersItemIdentification>
+            <Name>Ball valve 3/4"</Name>
+            <Quantity>8</Quantity>
+            <PriceAmount currencyID="EUR">11.0</PriceAmount>
+        </Item>
+    </InvoiceLine>
+    <LegalMonetaryTotal>
+        <PayableAmount currencyID="EUR">469.5</PayableAmount>
+    </LegalMonetaryTotal>
+</Invoice>

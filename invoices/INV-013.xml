@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+    <ID>INV-013</ID>
+    <IssueDate>2026-03-16</IssueDate>
+    <AccountingSupplierParty>
+        <Party>
+            <PartyName>
+                <Name>CoolSystems Distribution</Name>
+            </PartyName>
+        </Party>
+    </AccountingSupplierParty>
+    <BuyerReference>CSD-140</BuyerReference>
+    <InvoiceLine>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1004</ID>
+            </SellersItemIdentification>
+            <Name>Condensate pump</Name>
+            <Quantity>6</Quantity>
+            <PriceAmount currencyID="EUR">55.0</PriceAmount>
+        </Item>
+    </InvoiceLine>
+    <LegalMonetaryTotal>
+        <PayableAmount currencyID="EUR">330.0</PayableAmount>
+    </LegalMonetaryTotal>
+</Invoice>

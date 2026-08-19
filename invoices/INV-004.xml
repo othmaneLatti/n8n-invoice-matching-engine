@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+    <ID>INV-004</ID>
+    <IssueDate>2026-03-05</IssueDate>
+    <AccountingSupplierParty>
+        <Party>
+            <PartyName>
+                <Name>Nordic HVAC Parts</Name>
+            </PartyName>
+        </Party>
+    </AccountingSupplierParty>
+    <BuyerReference>NHP-330012</BuyerReference>
+    <InvoiceLine>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1002</ID>
+            </SellersItemIdentification>
+            <Name>Copper pipe 22mm</Name>
+            <Quantity>60</Quantity>
+            <PriceAmount currencyID="EUR">4.8</PriceAmount>
+        </Item>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1010</ID>
+            </SellersItemIdentification>
+            <Name>Electrical control board</Name>
+            <Quantity>3</Quantity>
+            <PriceAmount currencyID="EUR">95.0</PriceAmount>
+        </Item>
+    </InvoiceLine>
+    <LegalMonetaryTotal>
+        <PayableAmount currencyID="EUR">573.0</PayableAmount>
+    </LegalMonetaryTotal>
+</Invoice>

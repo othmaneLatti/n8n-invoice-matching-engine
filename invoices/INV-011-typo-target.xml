@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+    <ID>INV-011-typo-target</ID>
+    <IssueDate>2026-03-14</IssueDate>
+    <AccountingSupplierParty>
+        <Party>
+            <PartyName>
+                <Name>ThermoTech Supply BV</Name>
+            </PartyName>
+        </Party>
+    </AccountingSupplierParty>
+    <BuyerReference>TT-2044-10</BuyerReference>
+    <InvoiceLine>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1003</ID>
+            </SellersItemIdentification>
+            <Name>Refrigerant R32</Name>
+            <Quantity>10</Quantity>
+            <PriceAmount currencyID="EUR">18.0</PriceAmount>
+        </Item>
+    </InvoiceLine>
+    <LegalMonetaryTotal>
+        <PayableAmount currencyID="EUR">180.0</PayableAmount>
+    </LegalMonetaryTotal>
+</Invoice>

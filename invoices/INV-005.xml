@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+    <ID>INV-005</ID>
+    <IssueDate>2026-03-06</IssueDate>
+    <AccountingSupplierParty>
+        <Party>
+            <PartyName>
+                <Name>CoolSystems Distribution</Name>
+            </PartyName>
+        </Party>
+    </AccountingSupplierParty>
+    <BuyerReference>CSD-118</BuyerReference>
+    <InvoiceLine>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1003</ID>
+            </SellersItemIdentification>
+            <Name>Refrigerant R32</Name>
+            <Quantity>12</Quantity>
+            <PriceAmount currencyID="EUR">18.0</PriceAmount>
+        </Item>
+        <Item>
+            <SellersItemIdentification>
+                <ID>ART-1008</ID>
+            </SellersItemIdentification>
+            <Name>Insulation foam 9mm</Name>
+            <Quantity>25</Quantity>
+            <PriceAmount currencyID="EUR">2.1</PriceAmount>
+        </Item>
+    </InvoiceLine>
+    <LegalMonetaryTotal>
+        <PayableAmount currencyID="EUR">268.5</PayableAmount>
+    </LegalMonetaryTotal>
+</Invoice>
